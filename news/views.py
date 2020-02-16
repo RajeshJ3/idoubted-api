@@ -15,6 +15,6 @@ def news18_generate_news(request):
 
 
 class NewsViewSet(viewsets.ModelViewSet):
-    queryset = News.objects.filter(publish=True).order_by('-time')
+    queryset = News.objects.filter(publish=True).order_by('-time')[0:20]
     serializer_class = NewsSerializer
     lookup_field = 'slug'
