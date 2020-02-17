@@ -46,36 +46,43 @@ def news18_get_news(news):
     r = requests.get(news["url"])
     soup = BeautifulSoup(r.text, "html.parser")
 
-    div = soup.find("div", {'id': 'article_body'})
+    try:
+        div = soup.find("div", {'id': 'article_body'})
 
-    paragraphs = div.find_all("p")
+        paragraphs = div.find_all("p")
 
-    paragraph_list = []
-    for paragraph in paragraphs:
-        paragraph_list.append(paragraph.text)
+        paragraph_list = []
+        for paragraph in paragraphs:
+            paragraph_list.append(paragraph.text)
 
-    # Image found
-    image_div = soup.find("div", {'class': 'articleimg'})
-    image = image_div.find(
-        "picture").find("img").get("srcset")
+        # Image found
+        image_div = soup.find("div", {'class': 'articleimg'})
+        image = image_div.find(
+            "picture").find("img").get("srcset")
 
-    already = News.objects.filter(title=news["title"])
+        already = News.objects.filter(title=news["title"])
 
-    body = ""
+        body = ""
 
-    for paragraph in paragraph_list:
-        body += paragraph.replace("\n", "") + "\n\n"
-    if not already:
-        description = body[0:150]
-        this_news = News.objects.create(
-            title=news["title"], description=description, body=body, image=image, category=news["category"])
-        this_news.save()
-        print("Added: " + news["title"])
-    else:
-        print("Now already exist")
+        for paragraph in paragraph_list:
+            body += paragraph.replace("\n", "") + "\n\n"
+        if not already:
+            description = body[0:150]
+            this_news = News.objects.create(
+                title=news["title"], description=description, body=body, image=image, category=news["category"])
+            this_news.save()
+            print("Added: " + news["title"])
+            return True
+        else:
+            print("Already exist")
+            return False
+    except:
+        print("Error on scraping!")
+        return False
 
 
 def news18_generate():
     for URL in URLS:
         for news in news18_get_news_list(URL):
-            news18_get_news(news)
+            if not news18_get_news(news):
+                break

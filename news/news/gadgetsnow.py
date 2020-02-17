@@ -58,37 +58,44 @@ def gadgetsnow_get_news(news):
     r = requests.get(URL+news["url"])
     soup = BeautifulSoup(r.text, "html.parser")
 
-    if len(soup.find_all("div", {'id': 'c_as_wdt_content_2'})) == 0:
-        print("Skipped: " + news["title"])
+    try:
+
+        if len(soup.find_all("div", {'id': 'c_as_wdt_content_2'})) == 0:
+            print("Skipped: " + news["title"])
+            return False
+
+        div = soup.find("div", {'class': 'section1'})
+
+        paragraphs = str(div.text)
+
+        paragraph_list = paragraphs.split("\n\n")
+
+        # Image
+        highligh = soup.find("section", {'class': 'highlight clearfix'})
+        if len(highligh.find_all("div", {'class': 'highlight_img'})) == 0:
+            print("Skipped: " + news["title"])
+            return False
+        image_div = highligh.find("div", {'class': 'highlight_img'})
+        image = image_div.find("img").get("src")
+
+        already = News.objects.filter(title=news["title"])
+
+        body = ""
+        for paragraph in paragraph_list:
+            body += paragraph.replace("\n", "") + "\n\n"
+
+        if not already:
+            this_news = News.objects.create(
+                title=news["title"], description=news["description"], body=body, image=image, category=news["category"])
+            this_news.save()
+            print("Added: " + news["title"])
+            return True
+        else:
+            print("Already exist")
+            return False
+    except:
+        print("Error on scraping!")
         return False
-
-    div = soup.find("div", {'class': 'section1'})
-
-    paragraphs = str(div.text)
-
-    paragraph_list = paragraphs.split("\n\n")
-
-    # Image
-    highligh = soup.find("section", {'class': 'highlight clearfix'})
-    if len(highligh.find_all("div", {'class': 'highlight_img'})) == 0:
-        print("Skipped: " + news["title"])
-        return False
-    image_div = highligh.find("div", {'class': 'highlight_img'})
-    image = image_div.find("img").get("src")
-
-    already = News.objects.filter(title=news["title"])
-
-    body = ""
-    for paragraph in paragraph_list:
-        body += paragraph.replace("\n", "") + "\n\n"
-
-    if not already:
-        this_news = News.objects.create(
-            title=news["title"], description=news["description"], body=body, image=image, category=news["category"])
-        this_news.save()
-        print("Added: " + news["title"])
-    else:
-        print("Now already exist")
 
 
 def gadgetsnow_generate():
@@ -96,4 +103,5 @@ def gadgetsnow_generate():
         for news in gadgetsnow_get_news_list(URL):
             if "https://www.gadgetsnow.com/slideshows/" in news["url"] or "This article is no longer available" in news["title"]:
                 continue
-            gadgetsnow_get_news(news)
+            if not gadgetsnow_get_news(news):
+                break
