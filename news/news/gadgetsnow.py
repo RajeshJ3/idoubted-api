@@ -59,6 +59,7 @@ def gadgetsnow_get_news(news):
     soup = BeautifulSoup(r.text, "html.parser")
 
     if len(soup.find_all("div", {'id': 'c_as_wdt_content_2'})) == 0:
+        print("Skipped: " + news["title"])
         return False
 
     div = soup.find("div", {'class': 'section1'})
@@ -70,6 +71,7 @@ def gadgetsnow_get_news(news):
     # Image
     highligh = soup.find("section", {'class': 'highlight clearfix'})
     if len(highligh.find_all("div", {'class': 'highlight_img'})) == 0:
+        print("Skipped: " + news["title"])
         return False
     image_div = highligh.find("div", {'class': 'highlight_img'})
     image = image_div.find("img").get("src")
@@ -84,6 +86,7 @@ def gadgetsnow_get_news(news):
         this_news = News.objects.create(
             title=news["title"], description=news["description"], body=body, image=image, category=news["category"])
         this_news.save()
+        print("Added: " + news["title"])
     else:
         print("Now already exist")
 

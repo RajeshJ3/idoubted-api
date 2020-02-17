@@ -70,6 +70,7 @@ def news18_get_news(news):
         this_news = News.objects.create(
             title=news["title"], description=description, body=body, image=image, category=news["category"])
         this_news.save()
+        print("Added: " + news["title"])
     else:
         print("Now already exist")
 
