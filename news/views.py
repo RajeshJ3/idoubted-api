@@ -24,26 +24,56 @@ def news18_generate_news(request):
 def news_list(request):
     index = request.data.get("index")
     category = request.data.get("category")
+    newCategory = ""
 
     if category == "Tech news":
-        category = "tech"
+        newCategory = "tech"
+    elif category == "Jobs news":
+        newCategory = "jobs"
+    elif category == "IT Services news":
+        newCategorynewCategory = "it-services"
+    elif category == "Social news":
+        newCategory = "social"
+    elif category == "Mobiles news":
+        newCategory = "mobiles"
+    elif category == "PC's news":
+        newCategory = "pcs"
+    elif category == "Apps news":
+        newCategory = "apps"
+    elif category == "Gaming news":
+        newCategory = "gaming"
+    elif category == "Computing news":
+        newCategory = "computing"
+    elif category == "Who is news":
+        newCategory = "who-is"
+    elif category == "More Gadgets news":
+        newCategory = "more-gadgets"
+    elif category == "Politics news":
+        newCategory = "politics"
+    elif category == "India news":
+        newCategory = "india"
+    elif category == "Auto news":
+        newCategory = "auto"
+    elif category == "Buzz news":
+        newCategory = "buzz"
+    elif category == "Entertainment news":
+        newCategory = "entertainment"
     else:
-        category = False
+        newCategory = False
 
     if index == -1:
-        if category:
+        if newCategory:
             news = News.objects.filter(Q(publish=True) & Q(
-                category=category)).order_by('-time')[0:5]
+                category=newCategory)).order_by('-time')[0:5]
         else:
             news = News.objects.filter(publish=True).order_by('-time')[0:5]
     else:
-        if category:
+        if newCategory:
             news = News.objects.filter(Q(publish=True) & Q(
-                pk__lt=index) & Q(category=category)).order_by('-time')[0:5]
+                pk__lt=index) & Q(category=newCategory)).order_by('-time')[0:5]
         else:
             news = News.objects.filter(Q(publish=True) & Q(
                 pk__lt=index)).order_by('-time')[0:5]
-
     serializer = NewsSerializer(news, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
