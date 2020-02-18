@@ -47,3 +47,12 @@ def news_list(request):
 
     serializer = NewsSerializer(news, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def single_news(request):
+    slug = request.data.get("url")
+    news = News.objects.get(slug=slug)
+    serializer = NewsSerializer(news, many=False)
+    return Response(serializer.data, status=status.HTTP_200_OK)
