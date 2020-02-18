@@ -36,7 +36,6 @@ def news_list(request):
                 category=category)).order_by('-time')[0:5]
         else:
             news = News.objects.filter(publish=True).order_by('-time')[0:5]
-        serializer = NewsSerializer(news, many=True)
     else:
         if category:
             news = News.objects.filter(Q(publish=True) & Q(

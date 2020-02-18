@@ -3,11 +3,8 @@ from .models import News
 
 
 class NewsSerializer(serializers.ModelSerializer):
+    time = serializers.DateTimeField(format="%I:%M %p (%d %b)")
+
     class Meta:
         model = News
-        fields = "__all__"
-
-        lookup_field = 'slug'
-        extra_kwargs = {
-            'url': {'lookup_field': 'slug'}
-        }
+        fields = '__all__'
