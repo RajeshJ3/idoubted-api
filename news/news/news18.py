@@ -64,8 +64,11 @@ def news18_get_news(news):
 
         body = ""
 
+        to_remove = "Get the best of News18 delivered to your inbox - subscribe to News18"
         for paragraph in paragraph_list:
-            body += paragraph.replace("\n", "") + "\n\n"
+            if to_remove in paragraph:
+                continue
+            body += paragraph.replace(to_remove, "").replace("\n", "") + "\n\n"
         if not already:
             description = body[0:150]
             this_news = News.objects.create(
