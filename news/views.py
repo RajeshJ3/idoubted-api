@@ -64,16 +64,16 @@ def news_list(request):
     if index == -1:
         if newCategory:
             news = News.objects.filter(Q(publish=True) & Q(
-                category=newCategory)).order_by('-time')[0:5]
+                category=newCategory)).order_by('-time')[0:25]
         else:
-            news = News.objects.filter(publish=True).order_by('-time')[0:5]
+            news = News.objects.filter(publish=True).order_by('-time')[0:25]
     else:
         if newCategory:
             news = News.objects.filter(Q(publish=True) & Q(
-                pk__lt=index) & Q(category=newCategory)).order_by('-time')[0:5]
+                pk__lt=index) & Q(category=newCategory)).order_by('-time')[0:25]
         else:
             news = News.objects.filter(Q(publish=True) & Q(
-                pk__lt=index)).order_by('-time')[0:5]
+                pk__lt=index)).order_by('-time')[0:25]
     serializer = NewsSerializer(news, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
